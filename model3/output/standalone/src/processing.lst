@@ -1,0 +1,427 @@
+1     	 0000				_PROCESSING_ASM	 # Comment if we do not want assembler processing
+2     						
+3     							.if defined (_PROCESSING_ASM)
+4     							
+5     	 0010				_BLOCK_SIZE .equ 16
+6     	 0000				_L_CHANNEL .equ 0
+7     	 0001				_R_CHANNEL .equ 1
+8     	 0002				_C_CHANNEL .equ 2
+9     	 0003				_LFE_CHANNEL .equ 3
+10    	 0004				_LS_CHANNEL .equ 4
+11    	 0005				_RS_CHANNEL .equ 5
+12    						
+13    							.xdata_ovly
+13     >> start of macro: .xdata_ovly
+1+    									seg_single , "X_OVLY", X
+1+     >> start of macro: seg_single
+1+    						  .if ( "" != "" ) & defined( ___SegStart_X_ )
+2+    						    segment
+3+    						  .else
+4+    						    segment "X_OVLY"
+5+    							.if "" != ""
+6+    						___SegStart_X_
+7+    							.endif
+8+    						  .endif
+9+    							#RememberSegmentType
+10+    >> end of macro: seg_single
+2+     >> end of macro: .xdata_ovly
+14    						
+15    	 0000				_HPF5kHz .dw (0.33063278670382765), (-0.66126557340765530), (0.33063278670382765), (0.5), (-0.58506847445620070), (0.23746267235911003) 
+	 0000	 2A522CD7	 
+	 0001	 AB5BA652	 
+	 0002	 2A522CD7	 
+	 0003	 40000000	 
+	 0004	 B51C79EA	 
+	 0005	 1E652D46	 
+16    	 0006				_LPF800Hz .dw  (0.00149685338594683095), (0.00299370677189366190), (0.00149685338594683095), (0.5), (-0.9195583986626017000), (0.42556417062298607000)
+	 0006	 00310C84	 
+	 0007	 00621908	 
+	 0008	 00310C84	 
+	 0009	 40000000	 
+	 000A	 8A4BE90F	 
+	 000B	 3678E302	 
+17    						
+18    							.ydata_ovly
+18     >> start of macro: .ydata_ovly
+1+    									seg_single , "Y_OVLY", Y
+1+     >> start of macro: seg_single
+1+    						  .if ( "" != "" ) & defined( ___SegStart_Y_ )
+2+    						    segment
+3+    						  .else
+4+    						    segment "Y_OVLY"
+5+    							.if "" != ""
+6+    						___SegStart_Y_
+7+    							.endif
+8+    						  .endif
+9+    							#RememberSegmentType
+10+    >> end of macro: seg_single
+2+     >> end of macro: .ydata_ovly
+19    							
+20    	 0000				_x_historyLs	.bsc(2), (0)
+	 0000	 00000000	 
+	 0001	 00000000	 
+21    	 0002				_y_historyLs	.bsc(2), (0)
+	 0002	 00000000	 
+	 0003	 00000000	 
+22    	 0004				_x_historyLfe	.bsc(2), (0)
+	 0004	 00000000	 
+	 0005	 00000000	 
+23    	 0006				_y_historyLfe	.bsc(2), (0)
+	 0006	 00000000	 
+	 0007	 00000000	 
+24    							
+25    	 0000					.public _processing
+26    	 0000					.public _second_order_IIR
+27    	 0000					.extern _limiterThreshold
+28    	 0000					.extern _stage_two_gain
+29    	 0000					.extern _variableGain
+30    	 0000					.extern _mode
+31    							
+32    							.code_ovly
+32     >> start of macro: .code_ovly
+1+    									seg_single , "CODE_OVLY", CODE
+1+     >> start of macro: seg_single
+1+    						  .if ( "" != "" ) & defined( ___SegStart_CODE_ )
+2+    						    segment
+3+    						  .else
+4+    						    segment "CODE_OVLY"
+5+    							.if "" != ""
+6+    						___SegStart_CODE_
+7+    							.endif
+8+    						  .endif
+9+    							#RememberSegmentType
+10+    >> end of macro: seg_single
+2+     >> end of macro: .code_ovly
+33    							
+34    	 0000				_second_order_IIR:
+35    							# DSPaccum output = FRACT_NUM(0.0);
+36    							# a0 input, i0 coeffs, i4 x_history, i5 y_history
+37    							/*ymem[i7] = b3g; i7+=1										
+38    							ymem[i7] = b3h; i7+=1										
+39    							ymem[i7] = b3l; i7+=1			
+40    						
+41    							y0 = a0							
+42    						
+43    							x0 = xmem[i0]					
+44    							uhalfword(b3) = (0)				
+45    							
+46    							b3 += x0 * y0
+47    							i0+=1
+48    							x0 = xmem[i0]
+49    							y0 = ymem[i4]
+50    							b3 += x0 * y0
+51    							i0+=1
+52    							i4+=1
+53    							x0 = xmem[i0]
+54    							y0 = ymem[i4]
+55    							b3 += x0 * y0
+56    							i0+=1
+57    							i0+=1
+58    							x0 = xmem[i0]
+59    							y0 = ymem[i5]
+60    							b3 -= x0 * y0
+61    							i0+=1
+62    							i5+=1
+63    							x0 = xmem[i0]
+64    							y0 = ymem[i5]
+65    							b3 -= x0 * y0
+66    							
+67    							i5-=1
+68    							y0 = ymem[i5]
+69    							i5+=1
+70    							i4-=1		
+71    						
+72    							b3 = b3 << 1					
+73    							
+74    							ymem[i5] = y0; i5-=1										
+75    							ymem[i5] = b3;												
+76    							y0 = ymem[i4]; i4+=1										
+77    							ymem[i4] = y0; i4-=1										
+78    							ymem[i4] = a0												
+79    							
+80    							AnyReg(a0l, b3l)											
+81    							AnyReg(a0h, b3h)											
+82    							AnyReg(a0g, b3g)				
+83    						
+84    							i7-=1
+85    							b3l = ymem[i7]; i7-=1
+86    							b3h = ymem[i7]; i7-=1
+87    							b3g = ymem[i7]*/
+88    							
+89    	 0000	 A7D40017		ymem[i7] = b3g; i7+=1										
+90    	 0001	 9FD40017		ymem[i7] = b3h; i7+=1										
+91    	 0002	 97D40017		ymem[i7] = b3l; i7+=1										# Stavljamo na stek ono sto nije dostupno za upotrebu
+92    						
+93    	 0003	 48447FFF		y0 = a0														# y0 = input
+94    							# zakomentarisati i0+=1 za neoptimizovanu verziju
+95    	 0004	 80140010		x0 = xmem[i0]; i0+=1	# <-								# x0 = koeficijent
+96    	 0005	 8F4A0000		uhalfword(b3) = (0)											# output = 0
+97    							
+98    	 0006	 0888240F		b3 += x0 * y0; x0 = xmem[i0]; i0+=1; y0 = ymem[i4]; i4+=1	
+99    	 0007	 0890240F		b3 += x0 * y0; x0 = xmem[i0]; i0+=1; y0 = ymem[i4];	i4-=1	
+100   	 0008	 02087FFF		i0+=1
+101   	 0009	 08A8240F		b3 += x0 * y0; x0 = xmem[i0]; i0+=1; y0 = ymem[i5]; i5+=1	
+102   	 000A	 00B0241F		b3 -= x0 * y0; x0 = xmem[i0]; y0 = ymem[i5]; i5-=1			
+103   	 000B	 244D241F		b3 -= x0 * y0; y0 = ymem[i5]; i5+=1		
+104   							
+105   							// ----------------------------				
+106   						
+107   	 000C	 00004E07		b3 = b3 << 1												# Shiftujemo zato sto su svi koeficijenti bili skalirani (>> 1)
+108   							
+109   	 000D	 84D40025		ymem[i5] = y0; i5-=1										
+110   	 000E	 8FD40005		ymem[i5] = b3;												
+111   	 000F	 84940014		y0 = ymem[i4]; i4+=1										
+112   	 0010	 84D40024		ymem[i4] = y0; i4-=1										
+113   	 0011	 88D40004		ymem[i4] = a0												
+114   							
+115   	 0012	 97090010		AnyReg(a0l, b3l)											
+116   	 0013	 9F090018		AnyReg(a0h, b3h)											
+117   	 0014	 A7090020		AnyReg(a0g, b3g)											# prebacujemo b3 u a0 zato sto se u a0 mora nalaziti povratna vrednost
+118   						
+119   	 0015	 02177FFF		i7-=1
+120   	 0016	 97940027		b3l = ymem[i7]; i7-=1
+121   	 0017	 9F940027		b3h = ymem[i7]; i7-=1
+122   	 0018	 A7940007		b3g = ymem[i7]
+123   	 0019	 81880000		ret
+124   							
+125   	 001A				_processing:
+126   						# na raspolaganju a0 a1 b0 b1 i4 i5
+127   	 001A	 81000099		do(_BLOCK_SIZE), >loop
+128   								#L channel
+129   								# *p_L_channel_out = *p_L_channel_in * variableGain;
+130   	 001B	 85050000			i5 = i0 + (_L_CHANNEL * _BLOCK_SIZE)
+131   	 001C	 80940005			x0 = ymem[i5]
+132   	 001D	 84040000			y0 = xmem[_variableGain]
+133   	 001E	 00002400			a0 = x0 * y0
+134   	 001F	 85150000			i5 = i1 + (_L_CHANNEL * _BLOCK_SIZE)
+135   	 0020	 88D40005			ymem[i5] = a0
+136   								
+137   								# LS is inverted
+138   								# *p_LS_channel_out = -*p_L_channel_out;
+139   								# rescaled = second_order_IIR((DSPaccum)*p_LS_channel_out, HPF5kHz, x_historyLs, y_historyLs);
+140   								# *p_LS_channel_out = rescaled;
+141   								# i5 = i1 + (_L_CHANNEL * _BLOCK_SIZE)
+142   	 0021	 80940005			x0 = ymem[i5]	#iznad ovoga ces mozda morati opet adresu upisati u i5
+143   	 0022	 00002810			a0 = -x0		
+144   	 0023	 B0D40017			ymem[i7] = i0; i7+=1
+145   	 0024	 B04A0000			i0 = (_HPF5kHz)
+146   	 0025	 B8D40017			ymem[i7] = i4; i7+=1
+147   	 0026	 B84A0000			i4 = (_x_historyLs)
+148   	 0027	 B9D40017			ymem[i7] = i5; i7+=1 
+149   	 0028	 B94A0002			i5 = (_y_historyLs)
+150   	 0029	 80880000			call _second_order_IIR
+151   	 002A	 02177FFF			i7-=1
+152   	 002B	 B9940027			i5 = ymem[i7]; i7-=1
+153   	 002C	 B8940027			i4 = ymem[i7]; i7-=1
+154   	 002D	 B0940007			i0 = ymem[i7] 
+155   								
+156   								#b1 = a0
+157   	 002E	 8C040000			b0 = xmem[_limiterThreshold]
+158   	 002F	 00004860			if (b0 < a0) a0 = b0
+159   	 0030	 00004C84			b0 = -b0
+160   	 0031	 00004820			if(b0 > a0) a0 = b0
+161   								
+162   	 0032	 85150040			i5 = i1 + (_LS_CHANNEL * _BLOCK_SIZE)
+163   	 0033	 88D40005			ymem[i5] = a0
+164   								
+165   								# R channel
+166   								# *p_R_channel_out = *p_R_channel_in * variableGain;
+167   	 0034	 85050010			i5 = i0 + (_R_CHANNEL * _BLOCK_SIZE)
+168   	 0035	 80940005			x0 = ymem[i5]
+169   	 0036	 84040000			y0 = xmem[_variableGain]
+170   	 0037	 00002400			a0 = x0 * y0
+171   	 0038	 85150010			i5 = i1 + (_R_CHANNEL * _BLOCK_SIZE)
+172   	 0039	 88D40005			ymem[i5] = a0
+173   								
+174   								# RS is inverted
+175   								# *p_RS_channel_out = -*p_R_channel_out;
+176   	 003A	 80940005			x0 = ymem[i5]
+177   	 003B	 00002810			a0 = -x0
+178   	 003C	 85150050			i5 = i1 + (_RS_CHANNEL * _BLOCK_SIZE)
+179   	 003D	 88D40005			ymem[i5] = a0
+180   								
+181   								# if mode == 3_2_1 == 3
+182   	 003E	 88040000			a0 = xmem[_mode]
+183   	 003F	 8C7A0000			b0 = (0)
+184   	 0040	 9C4A0003	        uhalfword(b0h) = (0x3)
+185   	 0041	 00004F20	        a0 - b0
+186   	 0042	 8448008E	        if (a != 0) jmp>end
+187   						
+188   	 0043				%mode_3_2_0:					
+189   									# Central channel is L+R
+190   	 0043	 85150010				i5 = i1 + (_R_CHANNEL * _BLOCK_SIZE)
+191   	 0044	 80940005				x0 = ymem[i5]
+192   	 0045	 40487FFF				a0 = x0
+193   	 0046	 00004E40				a0 = a0 >> 1
+194   	 0047	 00004E40				a0 = a0 >> 1
+195   	 0048	 48407FFF				x0 = a0
+196   	 0049	 84040000				y0 = xmem[_stage_two_gain]
+197   	 004A	 00002400				a0 = x0 * y0	#scaledR
+198   									
+199   	 004B	 85150000				i5 = i1 + (_L_CHANNEL * _BLOCK_SIZE)
+200   	 004C	 80940005				x0 = ymem[i5]
+201   	 004D	 40497FFF				a1 = x0
+202   	 004E	 00004E41				a1 = a1 >> 1
+203   	 004F	 00004E41				a1 = a1 >> 1
+204   	 0050	 49407FFF				x0 = a1
+205   	 0051	 84040000				y0 = xmem[_stage_two_gain]
+206   	 0052	 00002401				a1 = x0 * y0	#scaledL
+207   									
+208   	 0053	 00004480				a0 = a1 + a0
+209   	 0054	 00004E00				a0 = a0 << 1
+210   	 0055	 00004E00				a0 = a0 << 1
+211   									
+212   									#a1 = xmem[_limiterThreshold]
+213   									#a0 - a1
+214   									#if (a < 0) jmp>checkFmin
+215   									#	a0 = a1
+216   						#%checkFmin:
+217   						#			a1 = -a1
+218   						#			a0 - a1
+219   						#			if (a >= 0) jmp>saturated
+220   						#				a0 = a1
+221   						#%saturated:
+222   	 0056	 8C040000				b0 = xmem[_limiterThreshold]
+223   	 0057	 00004860				if (b0 < a0) a0 = b0  
+224   	 0058	 00004C84				b0 = -b0
+225   	 0059	 00004820				if (b0 > a0) a0 = b0
+226   									
+227   	 005A	 85150020				i5 = i1 + (_C_CHANNEL * _BLOCK_SIZE)
+228   	 005B	 88D40005				ymem[i5] = a0
+229   									# if mode == 3_2_0 == 2
+230   	 005C	 88040000				a0 = xmem[_mode]
+231   	 005D	 8C7A0000				b0 = (0)
+232   	 005E	 9C4A0002	        	uhalfword(b0h) = (0x2)
+233   	 005F	 00004F20	        	a0 - b0
+234   	 0060	 84080098	        	if (a == 0) jmp>endEnd
+235   									
+236   	 0061				%mode_2_2_1:
+237   						
+238   									# Central channel is L-R
+239   	 0061	 85150010				i5 = i1 + (_R_CHANNEL * _BLOCK_SIZE)
+240   	 0062	 80940005				x0 = ymem[i5]
+241   	 0063	 40487FFF				a0 = x0
+242   	 0064	 00004E40				a0 = a0 >> 1
+243   	 0065	 00004E40				a0 = a0 >> 1
+244   	 0066	 48407FFF				x0 = a0
+245   	 0067	 84040000				y0 = xmem[_stage_two_gain]
+246   	 0068	 00002400				a0 = x0 * y0	#scaledR
+247   									
+248   	 0069	 85150000				i5 = i1 + (_L_CHANNEL * _BLOCK_SIZE)
+249   	 006A	 80940005				x0 = ymem[i5]
+250   	 006B	 40497FFF				a1 = x0
+251   	 006C	 00004E41				a1 = a1 >> 1
+252   	 006D	 00004E41				a1 = a1 >> 1
+253   	 006E	 49407FFF				x0 = a1
+254   	 006F	 84040000				y0 = xmem[_stage_two_gain]
+255   	 0070	 00002401				a1 = x0 * y0	#scaledL
+256   									
+257   	 0071	 000044C0				a0 = a1 - a0
+258   	 0072	 00004E00				a0 = a0 << 1
+259   	 0073	 00004E00				a0 = a0 << 1
+260   									
+261   	 0074	 8C040000				b0 = xmem[_limiterThreshold]
+262   									#a0 - a1
+263   	 0075	 00004860				if (b0 < a0) a0 = b0  #jmp>checkFmin
+264   	 0076	 00004C84				b0 = -b0
+265   	 0077	 00004820				if (b0 > a0) a0 = b0
+266   						#%checkFmin:
+267   									#a1 = -a1
+268   									#a0 - a1
+269   									#if (a >= 0) jmp>saturated
+270   										#a0 = a1
+271   						#%saturated:
+272   	 0078	 B0D40017				ymem[i7] = i0; i7+=1
+273   	 0079	 B04A0006				i0 = (_LPF800Hz)
+274   	 007A	 B8D40017				ymem[i7] = i4; i7+=1
+275   	 007B	 B84A0004				i4 = (_x_historyLfe)
+276   	 007C	 B9D40017				ymem[i7] = i5; i7+=1 
+277   	 007D	 B94A0006				i5 = (_y_historyLfe)
+278   	 007E	 80880000				call _second_order_IIR
+279   	 007F	 02177FFF				i7-=1
+280   	 0080	 B9940027				i5 = ymem[i7]; i7-=1
+281   	 0081	 B8940027				i4 = ymem[i7]; i7-=1
+282   	 0082	 B0940007				i0 = ymem[i7] 
+283   									
+284   									#b1 = a0
+285   	 0083	 8C040000				b0 = xmem[_limiterThreshold]
+286   	 0084	 00004860				if (b0 < a0) a0 = b0
+287   	 0085	 00004C84				b0 = -b0
+288   	 0086	 00004820				if(b0 > a0) a0 = b0
+289   										
+290   	 0087	 85150030				i5 = i1 + (_LFE_CHANNEL * _BLOCK_SIZE)
+291   	 0088	 88D40005				ymem[i5] = a0
+292   									
+293   									# if mode == 2_2_1 == 1
+294   	 0089	 88040000				a0 = xmem[_mode]
+295   	 008A	 8C7A0000				b0 = (0)
+296   	 008B	 9C4A0001		        uhalfword(b0h) = (0x1)
+297   	 008C	 00004F20		        a0 - b0
+298   	 008D	 84080098		        if (a == 0) jmp>endEnd
+299   								
+300   	 008E				%end:
+301   								# if mode == 3_2_0 == 2
+302   	 008E	 88040000			a0 = xmem[_mode]
+303   	 008F	 8C7A0000			b0 = (0)
+304   	 0090	 9C4A0002	        uhalfword(b0h) = (0x2)
+305   	 0091	 00004F20	        a0 - b0
+306   	 0092	 84080043	        if (a == 0) jmp<mode_3_2_0
+307   						        	# if mode == 2_2_1 == 1
+308   	 0093	 88040000				a0 = xmem[_mode]
+309   	 0094	 8C7A0000				b0 = (0)
+310   	 0095	 9C4A0001		        uhalfword(b0h) = (0x1)
+311   	 0096	 00004F20		        a0 - b0
+312   	 0097	 84080061		        if (a == 0) jmp<mode_2_2_1
+313   	 0098				%endEnd:	
+314   								
+315   	 0098	 02087FFF			i0+=1
+316   	 0099	 02097FFF	%loop:	i1+=1
+317   						
+318   	 009A	 81880000		ret
+319   							
+320   							.endif
+				 SYMBOL TABLE 
+
+    Name                                                                                    Type                  Value 
+
+_BLOCK_SIZE                                                                     					 Number				          16 (10H)
+_COMMON_INC_PATH_                                                               					 Define                 "D:/CirrusDSP/crystal32/common/inc/"
+_C_CHANNEL                                                                      					 Number				          2 (2H)
+_DSP_                                                                           					 Define                 "a"
+_HPF5kHz                                                                        			         Relocatable         processing_GEN_0000:0000H
+_LFE_CHANNEL                                                                    					 Number				          3 (3H)
+_LOCAL_INC_PATH_                                                                					 Define                 "inc/"
+_LOCAL_SRC_PATH_                                                                					 Define                 "src/"
+_LPF800Hz                                                                       			         Relocatable         processing_GEN_0000:0006H
+_LS_CHANNEL                                                                     					 Number				          4 (4H)
+_L_CHANNEL                                                                      					 Number				         0 (0H)
+_MUI_VERSION_                                                                   					 Define                 "020000"
+_OVLY_                                                                          					 Define                 "standalone"
+_OVLY_REVISION_                                                                 					 Define                 "020000"
+_PROCESSING_ASM                                                                 			  Unused Relocatable        __INIT:0000H
+_ROUTER_INC_PATH_                                                               					 Define                 "rom_inc/"
+_RS_CHANNEL                                                                     					 Number				          5 (5H)
+_R_CHANNEL                                                                      					 Number				          1 (1H)
+_SLOT_                                                                          					 Define                 "0"
+_TARGET_FAMILY_                                                                 					 Define                 "crystal32"
+_TOOLS_VERSION_                                                                 					 Define                 "0x0701"
+_VERSION_                                                                       					 Define                 "00"
+__CASM_VER__                                                                    			  Unused Variable		        0 (701H)
+_limiterThreshold                                                               					 External   
+_mode                                                                           					 External   
+_processing                                                                     			  Public Relocatable       processing_GEN_0002:001AH
+_second_order_IIR                                                               			  Public Relocatable       processing_GEN_0002:0000H
+_stage_two_gain                                                                 					 External   
+_variableGain                                                                   					 External   
+_x_historyLfe                                                                   			         Relocatable         processing_GEN_0001:0004H
+_x_historyLs                                                                    			         Relocatable         processing_GEN_0001:0000H
+_y_historyLfe                                                                   			         Relocatable         processing_GEN_0001:0006H
+_y_historyLs                                                                    			         Relocatable         processing_GEN_0001:0002H
+
+	       SEGMENTS:
+
+Size			  Name										 Class
+0000H	 __INIT                                  			 CODE                                    
+000CH	 processing_GEN_0000                     			 X_OVLY                                  
+0008H	 processing_GEN_0001                     			 Y_OVLY                                  
+009BH	 processing_GEN_0002                     			 CODE_OVLY                               

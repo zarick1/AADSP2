@@ -1,0 +1,188 @@
+============= BUILDING STARTED ============
+  Project: model3
+===========================================
+Compiling .c files...
+   [delete] Deleting: D:\CirrusDSP\clide\workspace\model3\output\standalone\src\main.O
+   [delete] Deleting: D:\CirrusDSP\clide\workspace\model3\output\standalone\src\main.s
+D:/CirrusDSP/clide/workspace/model3/src/main.c
+D:/CirrusDSP/bin/ccc2 D:/CirrusDSP/clide/workspace/model3/src/main.c
+ -S
+ -ruf
+ -fcse
+ -fprc
+ -fcompact
+ -funsafe-loop-optimizations
+ -g
+ -edi
+ -emit-hints
+ -ira
+ -fconst-pool=X
+ -fno0init
+ -femit-asm-struct
+ -cdl
+ -D_TOOLS_VERSION_=0x0701
+ -D_SLOT_=0
+ -D_OVLY_=standalone
+ -D_OVLY_REVISION_=020000
+ -D_VERSION_=00
+ -D_DSP_=a
+ -D_COMMON_INC_PATH_=D:/CirrusDSP/crystal32/common/inc/
+ -D_TARGET_FAMILY_=crystal32
+ -D_MUI_VERSION_=020000
+ -ID:/CirrusDSP/include/
+ -ID:/CirrusDSP/include/dsplib/
+ -ID:/CirrusDSP/clide/workspace/model3/inc/
+ -oD:/CirrusDSP/clide/workspace/model3/output/standalone/src/main.s
+ -D_LOCAL_SRC_PATH_=src/
+ -D_LOCAL_INC_PATH_=inc/
+ -D_ROUTER_INC_PATH_=rom_inc/
+     [exec] "D:/CirrusDSP/include/stdio.h", line 8: warning #1108: #warning directive: Functionality of stdio.h header file is not fully supported
+     [exec]   #warning Functionality of stdio.h header file is not fully supported
+     [exec]    ^
+     [exec] 
+     [exec] "D:/CirrusDSP/include/string.h", line 8: warning #1108: #warning directive: Functionality of string.h header file is not fully supported
+     [exec]   #warning Functionality of string.h header file is not fully supported
+     [exec]    ^
+     [exec] 
+     [exec] "D:/CirrusDSP/include/string.h", line 13: warning #303: typedef name has already been declared (with same type)
+     [exec]   typedef unsigned int size_t;
+     [exec]                        ^
+     [exec] 
+     [exec] WARNING: '-unsafe-loop-optimization' is ignored when '-g' option is used!
+     [exec] "D:/CirrusDSP/clide/workspace/model3/src/main.c", line 167: warning #4007: Pointer to unspecified memory zone.
+     [exec] 
+     [exec] "D:/CirrusDSP/clide/workspace/model3/src/main.c", line 169: warning #4007: Pointer to unspecified memory zone.
+     [exec] 
+     [exec] "D:/CirrusDSP/clide/workspace/model3/src/main.c", line 170: warning #4007: Pointer to unspecified memory zone.
+     [exec] 
+     [exec] "D:/CirrusDSP/clide/workspace/model3/src/main.c", line 256: info: Hardware loop is not emitted due to: 
+     [exec] Upper bound and initial loop index value are not constant.
+     [exec] Make them constant or try using -funsafe-loop-optimizations option.
+     [exec] 
+     [exec] "D:/CirrusDSP/clide/workspace/model3/src/main.c", line 276: info: Hardware loop is not emitted due to: 
+     [exec] Upper bound and initial loop index value are not constant.
+     [exec] Make them constant or try using -funsafe-loop-optimizations option.
+     [exec] 
+     [exec] "D:/CirrusDSP/clide/workspace/model3/src/main.c", line 252: info: Hardware loop is not emitted due to: 
+     [exec] Upper bound and initial loop index value are not constant.
+     [exec] Make them constant or try using -funsafe-loop-optimizations option.
+     [exec] 
+     [exec] "D:/CirrusDSP/clide/workspace/model3/src/main.c", line 189: info: SRS is used at this line.
+     [exec] 
+     [exec] "D:/CirrusDSP/clide/workspace/model3/src/main.c", line 252: info: Call to runtime function __div. Look at the separate document for information how to avoid this call.
+     [exec] 
+     [exec] "D:/CirrusDSP/clide/workspace/model3/src/main.c", line 259: info: SRS is used at this line.
+     [exec] 
+     [exec] "D:/CirrusDSP/clide/workspace/model3/src/main.c", line 312: info: SRS is used at this line.
+     [exec] 
+     [exec] "D:/CirrusDSP/clide/workspace/model3/src/main.c", line 60: info: SRS is used at this line.
+     [exec] 
+     [exec] FRONT END TIME: 0 seconds
+     [exec] BACK  END TIME: 1 seconds
+     [exec] 
+Assembling .a and .s files...
+   [delete] Deleting: D:\CirrusDSP\clide\workspace\model3\output\standalone\src\processing.O
+D:/CirrusDSP/clide/workspace/model3/src/processing.a
+D:/CirrusDSP/bin/casm D:/CirrusDSP/clide/workspace/model3/src/processing.a
+ --debug
+ -c
+ -s
+ -e
+ --cdl
+ -D_TOOLS_VERSION_=0x0701
+ -D_SLOT_=0
+ -D_OVLY_=standalone
+ -D_OVLY_REVISION_=020000
+ -D_VERSION_=00
+ -D_DSP_=a
+ -D_COMMON_INC_PATH_=D:/CirrusDSP/crystal32/common/inc/
+ -D_TARGET_FAMILY_=crystal32
+ -D_MUI_VERSION_=020000
+ -ID:/CirrusDSP/include/
+ -ID:/CirrusDSP/include/dsplib/
+ -ID:/CirrusDSP/clide/workspace/model3/inc/
+ -lD:/CirrusDSP/clide/workspace/model3/output/standalone/src/processing.lst
+ -oD:/CirrusDSP/clide/workspace/model3/output/standalone/src/processing.O
+ -iD:/CirrusDSP/crystal32/common/inc/base.h
+ -D_LOCAL_SRC_PATH_=src/
+ -D_LOCAL_INC_PATH_=inc/
+ -D_ROUTER_INC_PATH_=rom_inc/
+D:/CirrusDSP/clide/workspace/model3/output/standalone/src/main.s
+D:/CirrusDSP/bin/casm D:/CirrusDSP/clide/workspace/model3/output/standalone/src/main.s
+ --debug
+ -c
+ -s
+ -e
+ -D_TOOLS_VERSION_=0x0701
+ -D_SLOT_=0
+ -D_OVLY_=standalone
+ -D_OVLY_REVISION_=020000
+ -D_VERSION_=00
+ -D_DSP_=a
+ -D_COMMON_INC_PATH_=D:/CirrusDSP/crystal32/common/inc/
+ -D_TARGET_FAMILY_=crystal32
+ -D_MUI_VERSION_=020000
+ -ID:/CirrusDSP/include/
+ -ID:/CirrusDSP/include/dsplib/
+ -ID:/CirrusDSP/clide/workspace/model3/inc/
+ -lD:/CirrusDSP/clide/workspace/model3/output/standalone/src/main.lst
+ -oD:/CirrusDSP/clide/workspace/model3/output/standalone/src/main.O
+ -iD:/CirrusDSP/crystal32/common/inc/base.h
+ -D_LOCAL_SRC_PATH_=src/
+ -D_LOCAL_INC_PATH_=inc/
+ -D_ROUTER_INC_PATH_=rom_inc/
+Linking files...
+D:/CirrusDSP/bin/clink
+ -oD:/CirrusDSP/clide/workspace/model3/output/standalone/model3.img
+ -fD:/CirrusDSP/crystal32/memory_maps/v00.mem.xml
+ --output_type=RAM
+ --overlay_type=standalone
+ -lD:/CirrusDSP/lib/
+ -lD:/CirrusDSP/lib/dsplib
+ -lD:/CirrusDSP/lib/dsplib/crystal32/
+D:/CirrusDSP/clide/workspace/model3/output/standalone/src/main.O
+D:/CirrusDSP/clide/workspace/model3/output/standalone/src/processing.O
+     [exec] Warning #507: Unknown class: Y_OS_CC_GLOBALS
+     [exec]             for the segment: CC_HEAPSTEAL_VALUES
+     [exec]             from the module: D:\CirrusDSP\lib\dsplib\crystal32\cl_heapsteal.O
+     [exec] 
+     [exec] List of linked library's modules:
+     [exec] D:\CirrusDSP\lib\crt0.o
+     [exec] D:\CirrusDSP\lib\div.o
+     [exec] D:\CirrusDSP\lib\exit.o
+     [exec] D:\CirrusDSP\lib\simulator_stack.o
+     [exec] D:\CirrusDSP\lib\strcpy_x2x.o
+     [exec] D:\CirrusDSP\lib\udiv.o
+     [exec] D:\CirrusDSP\lib\dsplib\crystal32\cl_wavread_bits_per_sample.o
+     [exec] D:\CirrusDSP\lib\dsplib\crystal32\cl_wavread_close.o
+     [exec] D:\CirrusDSP\lib\dsplib\crystal32\cl_wavread_frame_rate.o
+     [exec] D:\C
+     [exec] irrusDSP\lib\dsplib\crystal32\cl_wavread_getnchannels.o
+     [exec] D:\CirrusDSP\lib\dsplib\crystal32\cl_wavread_number_of_frames.o
+     [exec] D:\CirrusDSP\lib\dsplib\crystal32\cl_wavread_open.o
+     [exec] D:\CirrusDSP\lib\dsplib\crystal32\cl_wavread_recvsample.o
+     [exec] D:\CirrusDSP\lib\dsplib\crystal32\cl_wavwrite_close.o
+     [exec] D:\CirrusDSP\lib\dsplib\crystal32\cl_wavwrite_open.o
+     [exec] D:\CirrusDSP\lib\dsplib\crystal32\cl_wavwrite_sendsample.o
+     [exec] D:\CirrusDSP\lib\dsplib\crystal32\printf.o
+Creating .uld file...
+D:/CirrusDSP/bin/lnkuld
+ -ja
+ D:/CirrusDSP/clide/workspace/model3/output/standalone/model3.img
+ D:/CirrusDSP/clide/workspace/model3/output/standalone/model3.uld
+     [exec] 
+     [exec] Reading file: D:/CirrusDSP/clide/workspace/model3/output/standalone/model3.img ...
+     [exec] 	Processed 767 line(s).
+     [exec] 
+     [exec] Writing output to file: D:/CirrusDSP/clide/workspace/model3/output/standalone/model3.uld ...
+     [exec] 
+     [exec] Done!
+     [exec] 
+     [exec] Writing output to file: D:/CirrusDSP/clide/workspace/model3/output/standalone/model3.uldb ...
+     [exec] 
+     [exec] Done!
+     [exec] 
+     [exec] Writing output to file: D:/CirrusDSP/clide/workspace/model3/output/standalone/model3.uldc ...
+
+BUILD SUCCESSFUL
+Total time: 3 seconds
