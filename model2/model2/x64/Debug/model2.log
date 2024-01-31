@@ -1,0 +1,6 @@
+﻿  main.cpp
+C:\Users\krsto\source\repos\model2\model2\main.cpp(228,19): warning C4244: '=': conversion from 'double' to 'DSPint', possible loss of data
+C:\Users\krsto\source\repos\model2\model2\main.cpp(278,9): warning C4477: 'printf' : format string '%f' requires an argument of type 'double', but variadic argument 1 has type 'DSPfract'
+C:\Users\krsto\source\repos\model2\model2\main.cpp(279,9): warning C4477: 'printf' : format string '%f' requires an argument of type 'double', but variadic argument 1 has type 'const DSPfract'
+C:\Users\krsto\source\repos\model2\model2\main.cpp(280,9): warning C4477: 'printf' : format string '%f' requires an argument of type 'double', but variadic argument 1 has type 'fract'
+  model2.vcxproj -> C:\Users\krsto\source\repos\model2\x64\Debug\model2.exe
